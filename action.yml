@@ -1,0 +1,33 @@
+name: 'Check dependency'
+description: 'Action for analyzing the dependencies in package.json'
+inputs:
+  project:
+    description: Key of the project
+    required: true
+  issuetype:
+    description: "Type of the issue to be created. Example: 'Incident'"
+    required: true
+  comment:
+    description: "Extend jira task description"
+    required: false
+  baseUrl:
+    description: "Base URL for JIRA"
+    required: true
+  email:
+    description: "Email of Optimax services bot account"
+    required: true
+  token:
+    description: "Token of Optimax services bot account"
+    required: true
+  taskId:
+    description: "Original Jira task ID"
+    required: true
+  depcheck:
+    description: "The JSON object this mission dependency"
+    required: true
+  exclude:
+    description: "The list of package which ignore in task"
+    required: false
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
