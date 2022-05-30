@@ -3,7 +3,7 @@ const Jira = require('./common/net/Jira')
 
 // eslint-disable-next-line import/no-dynamic-require
 const githubEvent = require(process.env.GITHUB_EVENT_PATH)
-const depcheck = require("depcheck");
+// const depcheck = require("depcheck");
 
 async function exec() {
   try {
@@ -11,14 +11,14 @@ async function exec() {
     // const config = parseArgs();
     // console.log(config);
 
-    depcheck('').then((unused) => {
-      console.log(unused.dependencies); // an array containing the unused dependencies
-      console.log(unused.devDependencies); // an array containing the unused devDependencies
-      console.log(unused.missing); // a lookup containing the dependencies missing in `package.json` and where they are used
-      console.log(unused.using); // a lookup indicating each dependency is used by which files
-      console.log(unused.invalidFiles); // files that cannot access or parse
-      console.log(unused.invalidDirs); // directories that cannot access
-    });
+    // depcheck('').then((unused) => {
+    //   console.log(unused.dependencies); // an array containing the unused dependencies
+    //   console.log(unused.devDependencies); // an array containing the unused devDependencies
+    //   console.log(unused.missing); // a lookup containing the dependencies missing in `package.json` and where they are used
+    //   console.log(unused.using); // a lookup indicating each dependency is used by which files
+    //   console.log(unused.invalidFiles); // files that cannot access or parse
+    //   console.log(unused.invalidDirs); // directories that cannot access
+    // });
 
     const jira = new Jira({
       baseUrl: config.baseUrl,
