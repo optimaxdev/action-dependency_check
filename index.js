@@ -111,5 +111,5 @@ function parseArgs() {
     comment: core.getInput('comment'),
   }
 }
-
+console.log('2')
 exec()
