@@ -26548,9 +26548,8 @@ const githubEvent = require(process.env.GITHUB_EVENT_PATH)
 
 async function exec() {
   try {
-    console.log('13434')
-    // const config = parseArgs();
-    // console.log(config);
+    const config = parseArgs();
+    console.log(config);
 
     // depcheck('').then((unused) => {
     //   console.log(unused.dependencies); // an array containing the unused dependencies
@@ -26645,7 +26644,7 @@ function parseArgs() {
     comment: core.getInput('comment'),
   }
 }
-console.log('2')
+
 exec()
 })();
 
