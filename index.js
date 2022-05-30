@@ -90,7 +90,8 @@ async function exec() {
     console.log('6')
     if (key) {
       console.log(`Created issues: ${key.issues}`)
-      return
+      core.setOutput("issues", 5)
+      return 32
     }
     process.exit(0)
   } catch (error) {
