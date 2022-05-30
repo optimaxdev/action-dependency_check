@@ -11,12 +11,22 @@ const config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
 
 // eslint-disable-next-line import/no-dynamic-require
 const githubEvent = require(process.env.GITHUB_EVENT_PATH)
+const depcheck = require("depcheck");
 
 async function exec() {
   try {
-    console.log('1')
-    const config = parseArgs();
-    console.log(config);
+    console.log('13434')
+    // const config = parseArgs();
+    // console.log(config);
+
+    depcheck('/path/to/your/project').then((unused) => {
+      console.log(unused.dependencies); // an array containing the unused dependencies
+      console.log(unused.devDependencies); // an array containing the unused devDependencies
+      console.log(unused.missing); // a lookup containing the dependencies missing in `package.json` and where they are used
+      console.log(unused.using); // a lookup indicating each dependency is used by which files
+      console.log(unused.invalidFiles); // files that cannot access or parse
+      console.log(unused.invalidDirs); // directories that cannot access
+    });
 
     const jira = new Jira({
       baseUrl: config.baseUrl,
@@ -93,13 +103,12 @@ function parseArgs() {
   return {
     project: core.getInput('project'),
     issuetype: core.getInput('issuetype'),
-    comment: core.getInput('comment') | '',
     baseUrl: core.getInput('baseUrl'),
     email: core.getInput('email'),
     token: core.getInput('token'),
-    taskId: core.getInput('taskId'),
-    depcheck: JSON.parse(core.getInput('depcheck')),
-    exclude: (core.getInput('exclude') | '').split(','),
+    workdir: core.getInput('workdir'),
+    ignores: core.getInput('ignore'),
+    comment: core.getInput('comment'),
   }
 }
 

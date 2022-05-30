@@ -7,9 +7,6 @@ inputs:
   issuetype:
     description: "Type of the issue to be created. Example: 'Incident'"
     required: true
-  comment:
-    description: "Extend jira task description"
-    required: false
   baseUrl:
     description: "Base URL for JIRA"
     required: true
@@ -19,14 +16,14 @@ inputs:
   token:
     description: "Token of Optimax services bot account"
     required: true
-  taskId:
-    description: "Original Jira task ID"
-    required: true
-  depcheck:
+  workdir:
     description: "The JSON object this mission dependency"
     required: true
-  exclude:
+  ignores:
     description: "The list of package which ignore in task"
+    required: false
+  comment:
+    description: "Extend jira task description"
     required: false
 runs:
   using: 'node12'
