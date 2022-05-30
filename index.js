@@ -1,12 +1,16 @@
 const core = require('@actions/core')
 const Jira = require('./common/net/Jira')
+const github = require('@actions/github');
+
+const githubToken = process.env.GITHUB_TOKEN
+const octokit = github.getOctokit(githubToken);
 
 const githubEvent = require(process.env.GITHUB_EVENT_PATH)
 
 async function exec() {
   try {
     const config = parseArgs();
-    console.log(config, githubEvent);
+    console.log(config);
 
     const jira = new Jira({
       baseUrl: config.baseUrl,
