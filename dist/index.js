@@ -34153,6 +34153,21 @@ exports.debug = debug; // for test
 
 /***/ }),
 
+/***/ 5387:
+/***/ ((module) => {
+
+function webpackEmptyContext(req) {
+	var e = new Error("Cannot find module '" + req + "'");
+	e.code = 'MODULE_NOT_FOUND';
+	throw e;
+}
+webpackEmptyContext.keys = () => ([]);
+webpackEmptyContext.resolve = webpackEmptyContext;
+webpackEmptyContext.id = 5387;
+module.exports = webpackEmptyContext;
+
+/***/ }),
+
 /***/ 9491:
 /***/ ((module) => {
 
@@ -37069,6 +37084,18 @@ module.exports = JSON.parse('{"assert":true,"node:assert":[">= 14.18 && < 15",">
 /******/ 	__nccwpck_require__.m = __webpack_modules__;
 /******/ 	
 /************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__nccwpck_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__nccwpck_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
@@ -37176,14 +37203,18 @@ module.exports = JSON.parse('{"assert":true,"node:assert":[">= 14.18 && < 15",">
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
+"use strict";
+__nccwpck_require__.r(__webpack_exports__);
+/* harmony import */ var depcheck__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(8307);
+/* harmony import */ var depcheck__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(depcheck__WEBPACK_IMPORTED_MODULE_0__);
 const core = __nccwpck_require__(9695)
 const Jira = __nccwpck_require__(6899)
 
 // eslint-disable-next-line import/no-dynamic-require
-const githubEvent = require(process.env.GITHUB_EVENT_PATH)
-const depcheck = __nccwpck_require__(8307);
+const githubEvent = __nccwpck_require__(5387)(process.env.GITHUB_EVENT_PATH)
+;
 
 const options = {
   ignoreBinPackage: false, // ignore the packages with bin entry
@@ -37200,18 +37231,18 @@ const options = {
   ],
   parsers: {
     // the target parsers
-    '**/*.js': depcheck.parser.es6,
-    '**/*.jsx': depcheck.parser.jsx,
+    '**/*.js': (depcheck__WEBPACK_IMPORTED_MODULE_0___default().parser.es6),
+    '**/*.jsx': (depcheck__WEBPACK_IMPORTED_MODULE_0___default().parser.jsx),
   },
   detectors: [
     // the target detectors
-    depcheck.detector.requireCallExpression,
-    depcheck.detector.importDeclaration,
+    (depcheck__WEBPACK_IMPORTED_MODULE_0___default().detector.requireCallExpression),
+    (depcheck__WEBPACK_IMPORTED_MODULE_0___default().detector.importDeclaration),
   ],
   specials: [
     // the target special parsers
-    depcheck.special.eslint,
-    depcheck.special.webpack,
+    (depcheck__WEBPACK_IMPORTED_MODULE_0___default().special.eslint),
+    (depcheck__WEBPACK_IMPORTED_MODULE_0___default().special.webpack),
   ],
   package: {
     // may specify dependencies instead of parsing package.json
@@ -37231,7 +37262,7 @@ async function exec() {
     const config = parseArgs();
     console.log(config, githubEvent);
 
-    const unused = await depcheck('', options);
+    const unused = await depcheck__WEBPACK_IMPORTED_MODULE_0___default()('', options);
     console.log(unused.dependencies); // an array containing the unused dependencies
     console.log(unused.devDependencies); // an array containing the unused devDependencies
 

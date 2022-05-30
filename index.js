@@ -3,7 +3,7 @@ const Jira = require('./common/net/Jira')
 
 // eslint-disable-next-line import/no-dynamic-require
 const githubEvent = require(process.env.GITHUB_EVENT_PATH)
-const depcheck = require("depcheck");
+import depcheck from "depcheck"
 
 const options = {
   ignoreBinPackage: false, // ignore the packages with bin entry
