@@ -1,13 +1,5 @@
 const core = require('@actions/core')
-const github = require('@actions/github');
-const YAML = require('yaml')
-
 const Jira = require('./common/net/Jira')
-const githubToken = process.env.GITHUB_TOKEN
-const octokit = github.getOctokit(githubToken);
-
-const configPath = `${process.env.HOME}/jira/config.yml`
-const config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
 
 // eslint-disable-next-line import/no-dynamic-require
 const githubEvent = require(process.env.GITHUB_EVENT_PATH)
@@ -19,7 +11,7 @@ async function exec() {
     // const config = parseArgs();
     // console.log(config);
 
-    depcheck('/path/to/your/project').then((unused) => {
+    depcheck('').then((unused) => {
       console.log(unused.dependencies); // an array containing the unused dependencies
       console.log(unused.devDependencies); // an array containing the unused devDependencies
       console.log(unused.missing); // a lookup containing the dependencies missing in `package.json` and where they are used
