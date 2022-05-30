@@ -5,9 +5,9 @@
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const { get } = __nccwpck_require__(194)
-const { format } = __nccwpck_require__(7310)
 
 const serviceName = 'jira'
+const { format } = __nccwpck_require__(7310)
 const client = __nccwpck_require__(3078)(serviceName)
 
 class Jira {
@@ -27878,7 +27878,8 @@ const githubEvent = require(process.env.GITHUB_EVENT_PATH)
 async function exec() {
   try {
     const config = parseArgs();
-    console.log(config);
+
+    const ignores = config.ignores
 
     const jira = new Jira({
       baseUrl: config.baseUrl,
@@ -27888,7 +27889,7 @@ async function exec() {
 
     const jiraIssue = config.issue ? await jira.getIssue(config.issue) : null
     const platform = githubEvent.repository.html_url.indexOf('Desktop') !== -1 ? 'D' : 'M'
-    console.log('3')
+
     let providedFields = [
       {
         key: 'project',
@@ -27907,12 +27908,8 @@ async function exec() {
         value: `${platform} - Delete unused packages from package.json`,
       },
       {
-        key: 'assignee',
-        value: {accountId: jiraIssue ? jiraIssue.fields.assignee.accountId : '5faa5f3a8405b10077a8fd7e'}, // if there's no jira task then assign to Mikhail Nikolaevskiy in Growth team (change to somebody else onc he's gone)
-      },
-      {
         key: 'customfield_12601', //  team field
-        value: {value: jiraIssue ? jiraIssue.fields.customfield_12601.value : 'Gusa Growth'},
+        value: {value: 'Gusa Growth'},
       },
       {
         key: 'labels',
@@ -27925,11 +27922,13 @@ async function exec() {
         You should explore each package before itself deleting!!!
         
         If package has deep mutual consecration with other you should add it to ignore list with path:
-        .github/workflows/depcheck.yml in field exclude
+        .github/workflows/depcheck.yml in field ignores!
+        
+        ${config.depcheck}
        `,
       },
     ]
-    console.log('4')
+
     const payload = providedFields.reduce((acc, field) => {
       acc.fields[field.key] = field.value
 
@@ -27937,13 +27936,12 @@ async function exec() {
     }, {
       fields: {},
     })
-    console.log('5')
-    const key = await jira.createIssue(payload).key
-    console.log('6')
+
+    const key = await jira.createIssue(payload)
+    console.log(key)
     if (key) {
-      console.log(`Created issues: ${key.issues}`)
-      core.setOutput("issues", 5)
-      return 32
+      console.log(`Created issues: ${key}`)
+      return
     }
     process.exit(0)
   } catch (error) {
