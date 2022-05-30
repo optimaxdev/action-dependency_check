@@ -1,9 +1,9 @@
 const core = require('@actions/core')
 const Jira = require('./common/net/Jira')
-
+const execute = require('child_process').exec;
 // eslint-disable-next-line import/no-dynamic-require
 const githubEvent = require(process.env.GITHUB_EVENT_PATH)
-import depcheck from "depcheck"
+const depcheck = require("depcheck");
 
 const options = {
   ignoreBinPackage: false, // ignore the packages with bin entry
