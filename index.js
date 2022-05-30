@@ -1,27 +1,32 @@
 const core = require('@actions/core')
 const github = require('@actions/github');
+const YAML = require('yaml')
 
 const Jira = require('./common/net/Jira')
 const githubToken = process.env.GITHUB_TOKEN
 const octokit = github.getOctokit(githubToken);
 
+const configPath = `${process.env.HOME}/jira/config.yml`
+const config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
 
 // eslint-disable-next-line import/no-dynamic-require
 const githubEvent = require(process.env.GITHUB_EVENT_PATH)
 
 async function exec() {
   try {
+    console.log('1')
     const config = parseArgs();
+    console.log(config);
 
     const jira = new Jira({
       baseUrl: config.baseUrl,
       token: config.token,
       email: config.email,
     });
-
+    console.log('2')
     const jiraIssue = config.issue ? await jira.getIssue(config.issue) : null
     const platform = githubEvent.repository.html_url.indexOf('Desktop') !== -1 ? 'D' : 'M'
-
+    console.log('3')
     let providedFields = [
       {
         key: 'project',
@@ -62,7 +67,7 @@ async function exec() {
        `,
       },
     ]
-
+    console.log('4')
     const payload = providedFields.reduce((acc, field) => {
       acc.fields[field.key] = field.value
 
@@ -70,9 +75,9 @@ async function exec() {
     }, {
       fields: {},
     })
-
+    console.log('5')
     const key = await jira.createIssue(payload).key
-
+    console.log('6')
     if (key) {
       console.log(`Created issues: ${key.issues}`)
       return
