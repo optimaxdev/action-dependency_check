@@ -16,7 +16,7 @@ inputs:
   token:
     description: "Token of Optimax services bot account"
     required: true
-  workdir:
+  depcheck:
     description: "The JSON object this mission dependency"
     required: true
   ignores:

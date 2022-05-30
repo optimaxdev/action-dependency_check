@@ -1,59 +1,12 @@
 const core = require('@actions/core')
 const Jira = require('./common/net/Jira')
-const execute = require('child_process').exec;
-// eslint-disable-next-line import/no-dynamic-require
-const githubEvent = require(process.env.GITHUB_EVENT_PATH)
-const depcheck = require("depcheck");
 
-const options = {
-  ignoreBinPackage: false, // ignore the packages with bin entry
-  skipMissing: false, // skip calculation of missing dependencies
-  ignorePatterns: [
-    // files matching these patterns will be ignored
-    'sandbox',
-    'dist',
-    'bower_components',
-  ],
-  ignoreMatches: [
-    // ignore dependencies that matches these globs
-    'grunt-*',
-  ],
-  parsers: {
-    // the target parsers
-    '**/*.js': depcheck.parser.es6,
-    '**/*.jsx': depcheck.parser.jsx,
-  },
-  detectors: [
-    // the target detectors
-    depcheck.detector.requireCallExpression,
-    depcheck.detector.importDeclaration,
-  ],
-  specials: [
-    // the target special parsers
-    depcheck.special.eslint,
-    depcheck.special.webpack,
-  ],
-  package: {
-    // may specify dependencies instead of parsing package.json
-    dependencies: {
-      lodash: '^4.17.15',
-    },
-    devDependencies: {
-      eslint: '^6.6.0',
-    },
-    peerDependencies: {},
-    optionalDependencies: {},
-  },
-};
+const githubEvent = require(process.env.GITHUB_EVENT_PATH)
 
 async function exec() {
   try {
     const config = parseArgs();
     console.log(config, githubEvent);
-
-    const unused = await depcheck('', options);
-    console.log(unused.dependencies); // an array containing the unused dependencies
-    console.log(unused.devDependencies); // an array containing the unused devDependencies
 
     const jira = new Jira({
       baseUrl: config.baseUrl,
@@ -134,7 +87,7 @@ function parseArgs() {
     baseUrl: core.getInput('baseUrl'),
     email: core.getInput('email'),
     token: core.getInput('token'),
-    workdir: core.getInput('workdir'),
+    depcheck: core.getInput('depcheck'),
     ignores: core.getInput('ignore'),
     comment: core.getInput('comment'),
   }
