@@ -27949,7 +27949,12 @@ async function exec() {
         If package has deep mutual consecration with other you should add it to ignore list with path:
         .github/workflows/depcheck.yml in field ignores!
         
-        
+        ${dependencies.length && `**dependency:**
+          ${dependencies.map(el => el + '/n')}
+        `}
+        ${devDependencies.length && `**devDependency:**
+          ${devDependencies.map(el => el + '/n')}
+        `}
        `,
       },
     ]
@@ -27962,11 +27967,12 @@ async function exec() {
       fields: {},
     })
 
-    const key = await jira.createIssue(payload).key
-    if (!key) {
+    const jiraTask = await jira.createIssue(payload)
+    console.log({jiraTask, payload})
+    if (!jiraTask.key) {
       throw new Error('Task is not created')
     }
-    core.setOutput("issue", key)
+    core.setOutput("issue", jiraTask.key)
     process.exit(0)
   } catch (error) {
     console.error(error)
