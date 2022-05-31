@@ -30,6 +30,7 @@ jobs:
         id: step_client
         run: echo "::set-output name=result::$(depcheck --skip-missing=true | tr '\n' ' ')"
       - name: Create Jira Task client
+        id: step_task_client
         uses: optimaxdev/action-dependency_check@master
         with:
           project: GUSA
@@ -42,6 +43,11 @@ jobs:
           ignores: '@actions/core, depcheck' # example
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Transition issue client
+        uses: atlassian/gajira-transition@master
+        with:
+        issue: ${{ steps.step_task_client.outputs.issue }}
+        transition: "READY FOR DEVELOPMENT"
 ```
 
 ## Action Spec:
@@ -62,7 +68,7 @@ jobs:
 
 ### Outputs
 
-void
+- `issue`: key of newly created issue
 
 ### Dev notes:
 When change this repository you should install vercel 
