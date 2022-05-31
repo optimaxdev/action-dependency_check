@@ -9,7 +9,7 @@ const githubEvent = require(process.env.GITHUB_EVENT_PATH)
 
 const prepareData = (data, ignores) => {
   const split = data.split('Unused devDependencies')
-  console.log(split[0].replace('Unused dependencies', '').replace(/ /g, ''))
+
   let dependencies = (split[0] || '').replace('Unused dependencies', '').replace(/ /g, '').split('*')
   dependencies.splice(0, 1)
 
@@ -81,12 +81,7 @@ async function exec() {
         If package has deep mutual consecration with other you should add it to ignore list with path:
         .github/workflows/depcheck.yml in field ignores!
         
-        ${dependencies.length && `**dependency:**
-          ${dependencies.map(el => el + '/n')}
-        `}
-        ${devDependencies.length && `**devDependency:**
-          ${devDependencies.map(el => el + '/n')}
-        `}
+        
        `,
       },
     ]
