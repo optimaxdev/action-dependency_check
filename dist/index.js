@@ -27882,7 +27882,7 @@ const prepareData = (data, ignores) => {
   dependencies.splice(0, 1)
 
   let devDependencies = (split[1] || '').replace(/ /g, '').split('*')
-  if(dependencies.length) devDependencies.splice(0, 1)
+  if(devDependencies.length) devDependencies.splice(0, 1)
 
   ignores.replace(/ /g, '').split(',').forEach((ignore) => {
     const idx = dependencies.indexOf(ignore)
@@ -27950,12 +27950,10 @@ async function exec() {
         .github/workflows/depcheck.yml in field ignores!
         
         ${dependencies.length && `*dependency:*
-          ${dependencies.map(el => `${el}
-          
-          `)}
+          ${dependencies.join(', ')}
         `}
         ${devDependencies.length && `*devDependency:*
-          ${devDependencies.map(el => el)}
+          ${devDependencies.join(', ')}
         `}
        `,
       },
