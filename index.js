@@ -74,18 +74,20 @@ async function exec() {
       },
       {
         key: 'description',
-        value: `**${config.comment}**
-        **BE CAREFULLY!**
-        **You should explore each package before itself deleting!!!**
+        value: `*${config.comment}*
+        *BE CAREFULLY!*
+        *You should explore each package before itself deleting!!!*
         
         If package has deep mutual consecration with other you should add it to ignore list with path:
         .github/workflows/depcheck.yml in field ignores!
         
-        ${dependencies.length && `**dependency:**
-          ${dependencies.map(el => el + '/n')}
+        ${dependencies.length && `*dependency:*
+          ${dependencies.map(el => `${el}
+          
+          `)}
         `}
-        ${devDependencies.length && `**devDependency:**
-          ${devDependencies.map(el => el + '/n')}
+        ${devDependencies.length && `*devDependency:*
+          ${devDependencies.map(el => el)}
         `}
        `,
       },
