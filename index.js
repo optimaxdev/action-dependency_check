@@ -9,14 +9,14 @@ const githubEvent = require(process.env.GITHUB_EVENT_PATH)
 
 const prepareData = (data, ignores) => {
   const split = data.split('Unused devDependencies')
-  console.log(split[0].replace('Unused dependencies', '').replaceAll(' ', ''))
-  let dependencies = (split[0] || '').replace('Unused dependencies', '').replaceAll(' ', '').split('*')
+  console.log(split[0].replace('Unused dependencies', '').replace(/ /g, ''))
+  let dependencies = (split[0] || '').replace('Unused dependencies', '').replace(/ /g, '').split('*')
   dependencies.splice(0, 1)
 
-  let devDependencies = (split[1] || '').replaceAll(' ', '').split('*')
+  let devDependencies = (split[1] || '').replace(/ /g, '').split('*')
   if(dependencies.length) devDependencies.splice(0, 1)
 
-  ignores.replaceAll(' ', '').split(',').forEach((ignore) => {
+  ignores.replace(/ /g, '').split(',').forEach((ignore) => {
     const idx = dependencies.indexOf(ignore)
     if(idx >= 0) dependencies.splice(idx, 1)
 
