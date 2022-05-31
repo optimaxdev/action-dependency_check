@@ -27902,7 +27902,7 @@ async function exec() {
   try {
     const config = parseArgs();
     let {dependencies, devDependencies} = prepareData(config.depcheck, config.ignores);
-    console.log({config})
+
     const jira = new Jira({
       baseUrl: config.baseUrl,
       token: config.token,
@@ -27938,7 +27938,7 @@ async function exec() {
       },
       {
         key: 'labels',
-        value: ['Technocal Debt'],
+        value: ['TechnicalDebt'],
       },
       {
         key: 'description',
