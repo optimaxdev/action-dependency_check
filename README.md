@@ -44,11 +44,30 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+## Action Spec:
 
+### Environment variables
+- `GITHUB_TOKEN` - GitHub secret [token](https://developer.github.com/actions/creating-workflows/storing-secrets/#github-token-secret) is used to retrieve diffs
 
+### Inputs
 
-When change localfile
-1) install npm i -g @vercel/ncc
-2) ncc build index.js -o dist
+- `project` - Key of the project
+- `issuetype` - Type of the issue to be created. Example: 'Task'
+- `baseUrl` - Base URL of you jira board
+- `email` - Jira account email
+- `token` - Jira account token
+- `depcheck` - The JSON object this mission dependency
+- `ignores` - The list of package which ignore in task
+- `comment` - Extend jira task description
 
-When add in another repo
+### Outputs
+
+void
+
+### Dev notes:
+When change this repository you should install vercel 
+> npm i -g @vercel/ncc
+
+Run command after changes and precommit
+
+> ncc build index.js -o dist
