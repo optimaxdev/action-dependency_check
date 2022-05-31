@@ -9,7 +9,7 @@ const githubEvent = require(process.env.GITHUB_EVENT_PATH)
 
 const prepareData = (data, ignores) => {
   const split = data.split('Unused devDependencies')
-  console.log(split)
+  console.log({data, split})
   let dependencies = (split[0] || '').replace('Unused dependencies', '').replaceAll(' ', '').split('*')
   dependencies.splice(0, 1)
 
@@ -118,7 +118,7 @@ function parseArgs() {
     baseUrl: core.getInput('baseUrl'),
     email: core.getInput('email'),
     token: core.getInput('token'),
-    depcheck: core.getInput('depcheck')[0],
+    depcheck: core.getInput('depcheck'),
     ignores: core.getInput('ignore'),
     comment: core.getInput('comment'),
   }
