@@ -27877,7 +27877,7 @@ const githubEvent = require(process.env.GITHUB_EVENT_PATH)
 
 const prepareData = (data, ignores) => {
   const split = data.split('Unused devDependencies')
-  console.log(split[0], split[0].replace('Unused dependencies', ''))
+  console.log(split[0].replace('Unused dependencies', ''))
   let dependencies = (split[0] || '').replace('Unused dependencies', '').replaceAll(' ', '').split('*')
   dependencies.splice(0, 1)
 
