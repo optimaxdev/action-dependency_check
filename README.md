@@ -1,4 +1,4 @@
-# eslint-disable-jira
+# Dependency check
 Create a Jira issue for removing unused dependency in package.json
 
 ## Usage
