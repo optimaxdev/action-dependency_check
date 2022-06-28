@@ -9,7 +9,7 @@ Example workflow which is triggered on schedule:
 name: "DepCheck"
 on:
   schedule:
-    - cron:  '* * 28 * *'
+    - cron:  '0 9 28 * *'
 
 jobs:
   dep-check:

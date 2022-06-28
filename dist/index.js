@@ -27909,7 +27909,7 @@ async function exec() {
       email: config.email,
     });
 
-    const platform = githubEvent.repository.html_url.indexOf('Desktop') !== -1 ? 'D' : 'M'
+    const platform = githubEvent.repository.name
 
     if(!dependencies.length && !devDependencies.length) {
       return
