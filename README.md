@@ -28,7 +28,7 @@ jobs:
         run: npm i -g depcheck
       - name: Run depcheck on client
         id: step_client
-        run: echo "::set-output name=result::$(depcheck --skip-missing=true | tr '\n' ' ')"
+        run: echo "result=$(depcheck --skip-missing=true | tr '\n' ' ')" >> $GITHUB_OUTPUT
       - name: Create Jira Task client
         id: step_task_client
         uses: optimaxdev/action-dependency_check@master

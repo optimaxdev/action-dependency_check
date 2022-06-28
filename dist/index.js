@@ -27873,8 +27873,6 @@ const github = __nccwpck_require__(4253);
 const githubToken = process.env.GITHUB_TOKEN
 const octokit = github.getOctokit(githubToken);
 
-const githubEvent = require(process.env.GITHUB_EVENT_PATH)
-
 const prepareData = (data, ignores) => {
   const split = data.split('Unused devDependencies')
 
@@ -27883,7 +27881,7 @@ const prepareData = (data, ignores) => {
 
   let devDependencies = (split[1] || '').replace(/ /g, '').split('*')
   if(devDependencies.length) devDependencies.splice(0, 1)
-
+  console.log({data, ignores})
   ignores.replace(/ /g, '').split(',').forEach((ignore) => {
     const idx = dependencies.indexOf(ignore)
     if(idx >= 0) dependencies.splice(idx, 1)
@@ -27908,8 +27906,8 @@ async function exec() {
       token: config.token,
       email: config.email,
     });
-    console.log(github.context.repo.repo)
-    const platform = githubEvent.repository.name
+
+    const platform = github.context.repo.repo
 
     if(!dependencies.length && !devDependencies.length) {
       return
