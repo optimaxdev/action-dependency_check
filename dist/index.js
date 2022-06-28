@@ -27908,7 +27908,7 @@ async function exec() {
       token: config.token,
       email: config.email,
     });
-
+    console.log(github.context.repo.repo)
     const platform = githubEvent.repository.name
 
     if(!dependencies.length && !devDependencies.length) {
