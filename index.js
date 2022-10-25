@@ -13,7 +13,7 @@ const prepareData = (data, ignores) => {
 
   let devDependencies = (split[1] || '').replace(/ /g, '').split('*')
   if(devDependencies.length) devDependencies.splice(0, 1)
-  console.log({dependencies, devDependencies, data, ignores})
+  console.log({ignores})
   ignores.replace(/ /g, '').split(',').forEach((ignore) => {
     const idx = dependencies.indexOf(ignore)
     if(idx >= 0) dependencies.splice(idx, 1)
@@ -21,7 +21,7 @@ const prepareData = (data, ignores) => {
     const idx_dep = devDependencies.indexOf(ignore)
     if(idx_dep >=0) devDependencies.splice(idx_dep, 1)
   })
-  console.log({dependencies, devDependencies})
+
   return {
     dependencies,
     devDependencies
@@ -32,7 +32,7 @@ async function exec() {
   try {
     const config = parseArgs();
     let {dependencies, devDependencies} = prepareData(config.depcheck, config.ignores);
-
+    console.log({config})
     const jira = new Jira({
       baseUrl: config.baseUrl,
       token: config.token,
