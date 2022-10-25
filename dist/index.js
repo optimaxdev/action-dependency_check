@@ -27986,7 +27986,7 @@ function parseArgs() {
     email: core.getInput('email'),
     token: core.getInput('token'),
     depcheck: core.getInput('depcheck'),
-    ignores: core.getInput('ignore'),
+    ignores: core.getInput('ignores'),
     comment: core.getInput('comment'),
   }
 }
