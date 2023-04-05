@@ -52,7 +52,7 @@ const prepareData = async (config) => {
   });
 
   if (dependencies.length > 0 || devDependencies.length > 0) {
-    return await filterUnresolvedDeps(config);
+    return await filterUnresolvedDeps(config, dependencies, devDependencies);
   }
 
   return {
