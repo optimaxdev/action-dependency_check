@@ -17,6 +17,7 @@ const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
   const prevDevDependencies = new Set();
 
   jiraTasks?.issues?.forEach((issue) => {
+    /* Parse dependencies from description */
     issue.fields.description.match(/\*dependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDependencies.add(a));
     issue.fields.description.match(/\*devDependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDevDependencies.add(a));
   });
@@ -78,16 +79,23 @@ async function exec() {
 
     let {dependencies, devDependencies} = await prepareData(config);
 
-    if(!dependencies.length && !devDependencies.length) {
-      return
-    }
-
     console.log('dependencies after filters', dependencies);
     console.log('new devDependencies after filters', devDependencies);
 
-    return
+    if(!dependencies.length && !devDependencies.length) {
+      console.log('task won\'t be created');
+      return;
+    }
 
     const platform = github.context.repo.repo;
+
+    const dependenciesDescription = dependencies.length > 0 ? `*dependency:*
+          {{${dependencies.join(', ')}}}
+        ` : '';
+
+    const devDependenciesDescription = devDependencies.length > 0 ? `*devDependency:*
+          {{${devDependencies.join(', ')}}}
+        ` : '';
 
     let providedFields = [
       {
@@ -123,12 +131,11 @@ async function exec() {
         If package has deep mutual consecration with other you should add it to ignore list with path:
         .github/workflows/depcheck.yml in field ignores!
         
-        ${dependencies.length > 0 && `*dependency:*
-          {{${dependencies.join(', ')}}}
-        `}
-        ${devDependencies.length > 0 && `*devDependency:*
-          {{${devDependencies.join(', ')}}}
-        `}
+        Please, don't edit anything bellow it can brake automatization
+        
+        ${dependenciesDescription}
+        
+        ${devDependenciesDescription}
        `,
       },
     ]
@@ -139,14 +146,16 @@ async function exec() {
       return acc
     }, {
       fields: {},
+      transition: {
+        id: '471', // 'Ready For Development'
+      },
     })
 
-  /*  const jiraTask = await jira.createIssue(payload)
+    const jiraTask = await jira.createIssue(payload)
     console.log({jiraTask, payload})
     if (!jiraTask.key) {
       throw new Error('Task is not created')
     }
-    core.setOutput("issue", jiraTask.key)*/
     process.exit(0)
   } catch (error) {
     console.error(error)

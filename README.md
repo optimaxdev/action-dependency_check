@@ -41,13 +41,6 @@ jobs:
           depcheck: ${{ steps.step_client.outputs.result }}
           comment: ON CLIENT
           ignores: '@actions/core, depcheck' # example
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Transition issue client
-        uses: atlassian/gajira-transition@master
-        with:
-        issue: ${{ steps.step_task_client.outputs.issue }}
-        transition: "READY FOR DEVELOPMENT"
 ```
 
 ## Action Spec:
