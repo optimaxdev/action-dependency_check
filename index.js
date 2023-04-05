@@ -73,7 +73,7 @@ async function exec() {
       email: config.email,
     });
 
-    let {dependencies, devDependencies} = await prepareData(jira, config);
+    let {dependencies, devDependencies} = await prepareData(config);
 
     if(!dependencies.length && !devDependencies.length) {
       return
