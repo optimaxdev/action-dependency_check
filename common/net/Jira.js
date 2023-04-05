@@ -52,6 +52,25 @@ class Jira {
     })
   }
 
+  async searchIssues ({comment, platform}) {
+    try {
+      return this.fetch('searchIssue', {
+        pathname: `/rest/api/2/search/`,
+        query: {
+          jql: `description ~ "${comment} depcheck.yml" AND summary ~ "${platform} Delete unused packages from package.json" AND resolution=Unresolved ORDER BY created ASC`,
+          maxResults: 5,
+          fields: 'description'
+        },
+      })
+    } catch (error) {
+      if (get(error, 'res.status') === 404) {
+        return
+      }
+
+      throw error
+    }
+  }
+
   async fetch (apiMethodName,
                { host, pathname, query },
                { method, body, headers = {} } = {}) {

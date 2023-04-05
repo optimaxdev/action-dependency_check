@@ -1,9 +1,6 @@
-const core = require('@actions/core')
-const Jira = require('./common/net/Jira')
+const core = require('@actions/core');
+const Jira = require('./common/net/Jira');
 const github = require('@actions/github');
-
-const githubToken = process.env.GITHUB_TOKEN
-const octokit = github.getOctokit(githubToken);
 
 const prepareData = (data, ignores) => {
   const split = data.split('Unused devDependencies')
@@ -28,6 +25,23 @@ const prepareData = (data, ignores) => {
   }
 }
 
+const getPrevDeps = async (jira, comment, platform) => {
+  const jiraTasks = await jira.searchIssues({comment, platform});
+
+  const prevDependencies = new Set();
+  const prevDevDependencies = new Set();
+
+  jiraTasks?.issues?.forEach((issue) => {
+    issue.fields.description.match(/\*dependency:\*\n.*\{\{([^\}\}]+)\}\}/)?.[1]?.split(', ')?.forEach((a) => prevDependencies.add(a));
+    issue.fields.description.match(/\*devDependency:\*\n.*\{\{([^\}\}]+)\}\}/)?.[1]?.split(', ')?.forEach((a) => prevDevDependencies.add(a));
+  });
+
+  return {
+    prevDependencies,
+    prevDevDependencies
+  }
+}
+
 async function exec() {
   try {
     const config = parseArgs();
@@ -44,6 +58,10 @@ async function exec() {
     if(!dependencies.length && !devDependencies.length) {
       return
     }
+
+    const prevDeps = await getPrevDeps(jira, config.comment, platform);
+
+    console.log(prevDeps);
 
     let providedFields = [
       {
@@ -79,11 +97,11 @@ async function exec() {
         If package has deep mutual consecration with other you should add it to ignore list with path:
         .github/workflows/depcheck.yml in field ignores!
         
-        ${dependencies.length && `*dependency:*
-          ${dependencies.join(', ')}
+        ${dependencies.length > 0 && `*dependency:*
+          {{${dependencies.join(', ')}}}
         `}
-        ${devDependencies.length && `*devDependency:*
-          ${devDependencies.join(', ')}
+        ${devDependencies.length > 0 && `*devDependency:*
+          {{${devDependencies.join(', ')}}}
         `}
        `,
       },
@@ -97,12 +115,12 @@ async function exec() {
       fields: {},
     })
 
-    const jiraTask = await jira.createIssue(payload)
+  /*  const jiraTask = await jira.createIssue(payload)
     console.log({jiraTask, payload})
     if (!jiraTask.key) {
       throw new Error('Task is not created')
     }
-    core.setOutput("issue", jiraTask.key)
+    core.setOutput("issue", jiraTask.key)*/
     process.exit(0)
   } catch (error) {
     console.error(error)
