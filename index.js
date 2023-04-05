@@ -2,22 +2,58 @@ const core = require('@actions/core');
 const Jira = require('./common/net/Jira');
 const github = require('@actions/github');
 
-const prepareData = (data, ignores) => {
-  const split = data.split('Unused devDependencies')
+const SUMMARY = 'Delete unused packages from package.json';
 
-  let dependencies = (split[0] || '').replace('Unused dependencies', '').replace(/ /g, '').split('*')
-  dependencies.splice(0, 1)
+const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
+  const jira = new Jira({
+    baseUrl: config.baseUrl,
+    token: config.token,
+    email: config.email,
+  });
 
-  let devDependencies = (split[1] || '').replace(/ /g, '').split('*')
-  if(devDependencies.length) devDependencies.splice(0, 1)
-  console.log({ignores})
+  const jiraTasks = await jira.searchDepcheckIssues({comment: config.comment, summary: `${github.context.repo.repo} ${SUMMARY}`});
+
+  const prevDependencies = new Set();
+  const prevDevDependencies = new Set();
+
+  jiraTasks?.issues?.forEach((issue) => {
+    issue.fields.description.match(/\*dependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDependencies.add(a));
+    issue.fields.description.match(/\*devDependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDevDependencies.add(a));
+  });
+
+  console.log('unresolved dependencies:', prevDependencies);
+  console.log('unresolved devDependencies:', prevDevDependencies);
+
+  return {
+    dependencies: dependencies.filter(d => prevDependencies.has(d)),
+    devDependencies: devDependencies.filter(d => prevDevDependencies.has(d)),
+  }
+}
+
+const prepareData = async (config) => {
+  const {depcheck, ignores} = config;
+
+  const split = depcheck.split('Unused devDependencies');
+
+  let dependencies = (split[0] || '').replace('Unused dependencies', '').replace(/ /g, '').split('*');
+  dependencies.splice(0, 1);
+
+  let devDependencies = (split[1] || '').replace(/ /g, '').split('*');
+  if(devDependencies.length) devDependencies.splice(0, 1);
+
+  console.log({ignores});
+
   ignores.replace(/ /g, '').split(',').forEach((ignore) => {
-    const idx = dependencies.indexOf(ignore)
-    if(idx >= 0) dependencies.splice(idx, 1)
+    const idx = dependencies.indexOf(ignore);
+    if(idx >= 0) dependencies.splice(idx, 1);
 
-    const idx_dep = devDependencies.indexOf(ignore)
-    if(idx_dep >=0) devDependencies.splice(idx_dep, 1)
-  })
+    const idx_dep = devDependencies.indexOf(ignore);
+    if(idx_dep >=0) devDependencies.splice(idx_dep, 1);
+  });
+
+  if (dependencies.length > 0 || devDependencies.length > 0) {
+    return await filterUnresolvedDeps(config);
+  }
 
   return {
     dependencies,
@@ -25,43 +61,30 @@ const prepareData = (data, ignores) => {
   }
 }
 
-const getPrevDeps = async (jira, comment, platform) => {
-  const jiraTasks = await jira.searchIssues({comment, platform});
-
-  const prevDependencies = new Set();
-  const prevDevDependencies = new Set();
-
-  jiraTasks?.issues?.forEach((issue) => {
-    issue.fields.description.match(/\*dependency:\*\n.*\{\{([^\}\}]+)\}\}/)?.[1]?.split(', ')?.forEach((a) => prevDependencies.add(a));
-    issue.fields.description.match(/\*devDependency:\*\n.*\{\{([^\}\}]+)\}\}/)?.[1]?.split(', ')?.forEach((a) => prevDevDependencies.add(a));
-  });
-
-  return {
-    prevDependencies,
-    prevDevDependencies
-  }
-}
-
 async function exec() {
   try {
     const config = parseArgs();
-    let {dependencies, devDependencies} = prepareData(config.depcheck, config.ignores);
-    console.log({config})
+
+    console.log({config});
+
     const jira = new Jira({
       baseUrl: config.baseUrl,
       token: config.token,
       email: config.email,
     });
 
-    const platform = github.context.repo.repo
+    let {dependencies, devDependencies} = await prepareData(jira, config);
 
     if(!dependencies.length && !devDependencies.length) {
       return
     }
 
-    const prevDeps = await getPrevDeps(jira, config.comment, platform);
+    console.log('new dependencies', dependencies);
+    console.log('new devDependencies', devDependencies);
 
-    console.log(prevDeps);
+    return
+
+    const platform = github.context.repo.repo;
 
     let providedFields = [
       {
@@ -78,7 +101,7 @@ async function exec() {
       },
       {
         key: 'summary',
-        value: `${platform} - Delete unused packages from package.json`,
+        value: `${platform} - ${SUMMARY}`,
       },
       {
         key: 'customfield_12601', //  team field
