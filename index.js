@@ -21,12 +21,15 @@ const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
     issue.fields.description.match(/\*devDependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDevDependencies.add(a));
   });
 
+  console.log('dependencies before filters:', dependencies);
+  console.log('devDependencies before filters:', devDependencies);
+
   console.log('unresolved dependencies:', prevDependencies);
   console.log('unresolved devDependencies:', prevDevDependencies);
 
   return {
-    dependencies: dependencies.filter(d => prevDependencies.has(d)),
-    devDependencies: devDependencies.filter(d => prevDevDependencies.has(d)),
+    dependencies: dependencies.filter(d => !prevDependencies.has(d)),
+    devDependencies: devDependencies.filter(d => !prevDevDependencies.has(d)),
   }
 }
 
@@ -79,8 +82,8 @@ async function exec() {
       return
     }
 
-    console.log('new dependencies', dependencies);
-    console.log('new devDependencies', devDependencies);
+    console.log('dependencies after filters', dependencies);
+    console.log('new devDependencies after filters', devDependencies);
 
     return
 
