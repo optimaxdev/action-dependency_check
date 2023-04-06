@@ -1,26 +1,63 @@
-const core = require('@actions/core')
-const Jira = require('./common/net/Jira')
+const core = require('@actions/core');
+const Jira = require('./common/net/Jira');
 const github = require('@actions/github');
 
-const githubToken = process.env.GITHUB_TOKEN
-const octokit = github.getOctokit(githubToken);
+const SUMMARY = 'Delete unused packages from package.json';
 
-const prepareData = (data, ignores) => {
-  const split = data.split('Unused devDependencies')
+const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
+  const jira = new Jira({
+    baseUrl: config.baseUrl,
+    token: config.token,
+    email: config.email,
+  });
 
-  let dependencies = (split[0] || '').replace('Unused dependencies', '').replace(/ /g, '').split('*')
-  dependencies.splice(0, 1)
+  const jiraTasks = await jira.searchDepcheckIssues({comment: config.comment, summary: `${github.context.repo.repo} ${SUMMARY}`});
 
-  let devDependencies = (split[1] || '').replace(/ /g, '').split('*')
-  if(devDependencies.length) devDependencies.splice(0, 1)
-  console.log({ignores})
+  const prevDependencies = new Set();
+  const prevDevDependencies = new Set();
+
+  jiraTasks?.issues?.forEach((issue) => {
+    /* Parse dependencies from description */
+    issue.fields.description.match(/\*dependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDependencies.add(a));
+    issue.fields.description.match(/\*devDependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDevDependencies.add(a));
+  });
+
+  console.log('dependencies before filters:', dependencies);
+  console.log('devDependencies before filters:', devDependencies);
+
+  console.log('unresolved dependencies:', prevDependencies);
+  console.log('unresolved devDependencies:', prevDevDependencies);
+
+  return {
+    dependencies: dependencies.filter(d => !prevDependencies.has(d)),
+    devDependencies: devDependencies.filter(d => !prevDevDependencies.has(d)),
+  }
+}
+
+const prepareData = async (config) => {
+  const {depcheck, ignores} = config;
+
+  const split = depcheck.split('Unused devDependencies');
+
+  let dependencies = (split[0] || '').replace('Unused dependencies', '').replace(/ /g, '').split('*');
+  dependencies.splice(0, 1);
+
+  let devDependencies = (split[1] || '').replace(/ /g, '').split('*');
+  if(devDependencies.length) devDependencies.splice(0, 1);
+
+  console.log({ignores});
+
   ignores.replace(/ /g, '').split(',').forEach((ignore) => {
-    const idx = dependencies.indexOf(ignore)
-    if(idx >= 0) dependencies.splice(idx, 1)
+    const idx = dependencies.indexOf(ignore);
+    if(idx >= 0) dependencies.splice(idx, 1);
 
-    const idx_dep = devDependencies.indexOf(ignore)
-    if(idx_dep >=0) devDependencies.splice(idx_dep, 1)
-  })
+    const idx_dep = devDependencies.indexOf(ignore);
+    if(idx_dep >=0) devDependencies.splice(idx_dep, 1);
+  });
+
+  if (dependencies.length > 0 || devDependencies.length > 0) {
+    return await filterUnresolvedDeps(config, dependencies, devDependencies);
+  }
 
   return {
     dependencies,
@@ -31,19 +68,34 @@ const prepareData = (data, ignores) => {
 async function exec() {
   try {
     const config = parseArgs();
-    let {dependencies, devDependencies} = prepareData(config.depcheck, config.ignores);
-    console.log({config})
+
+    console.log({config});
+
     const jira = new Jira({
       baseUrl: config.baseUrl,
       token: config.token,
       email: config.email,
     });
 
-    const platform = github.context.repo.repo
+    let {dependencies, devDependencies} = await prepareData(config);
+
+    console.log('dependencies after filters', dependencies);
+    console.log('new devDependencies after filters', devDependencies);
 
     if(!dependencies.length && !devDependencies.length) {
-      return
+      console.log('task won\'t be created');
+      return;
     }
+
+    const platform = github.context.repo.repo;
+
+    const dependenciesDescription = dependencies.length > 0 ? `*dependency:*
+          {{${dependencies.join(', ')}}}
+        ` : '';
+
+    const devDependenciesDescription = devDependencies.length > 0 ? `*devDependency:*
+          {{${devDependencies.join(', ')}}}
+        ` : '';
 
     let providedFields = [
       {
@@ -60,7 +112,7 @@ async function exec() {
       },
       {
         key: 'summary',
-        value: `${platform} - Delete unused packages from package.json`,
+        value: `${platform} - ${SUMMARY}`,
       },
       {
         key: 'customfield_12601', //  team field
@@ -79,12 +131,11 @@ async function exec() {
         If package has deep mutual consecration with other you should add it to ignore list with path:
         .github/workflows/depcheck.yml in field ignores!
         
-        ${dependencies.length && `*dependency:*
-          ${dependencies.join(', ')}
-        `}
-        ${devDependencies.length && `*devDependency:*
-          ${devDependencies.join(', ')}
-        `}
+        Please, don't edit anything bellow it can brake automatization
+        
+        ${dependenciesDescription}
+        
+        ${devDependenciesDescription}
        `,
       },
     ]
@@ -95,6 +146,9 @@ async function exec() {
       return acc
     }, {
       fields: {},
+      transition: {
+        id: '471', // 'Ready For Development'
+      },
     })
 
     const jiraTask = await jira.createIssue(payload)
@@ -102,7 +156,6 @@ async function exec() {
     if (!jiraTask.key) {
       throw new Error('Task is not created')
     }
-    core.setOutput("issue", jiraTask.key)
     process.exit(0)
   } catch (error) {
     console.error(error)
