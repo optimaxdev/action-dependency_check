@@ -11,7 +11,7 @@ const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
     email: config.email,
   });
 
-  const jiraTasks = await jira.searchDepcheckIssues({comment: config.comment, summary: `${github.context.repo.repo} ${SUMMARY}`});
+  const jiraTasks = await jira.searchDepcheckIssues({comment: config.comment, summary: `${github.context.repo.repo} - ${SUMMARY} ${config.comment}`});
 
   const prevDependencies = new Set();
   const prevDevDependencies = new Set();
@@ -112,7 +112,7 @@ async function exec() {
       },
       {
         key: 'summary',
-        value: `${platform} - ${SUMMARY}`,
+        value: `${platform} - ${SUMMARY} ${config.comment}`,
       },
       {
         key: 'customfield_12601', //  team field
@@ -125,7 +125,7 @@ async function exec() {
       {
         key: 'description',
         value: `*${config.comment}*
-        *BE CAREFULLY!*
+        *BE CAREFUL!*
         *You should explore each package before itself deleting!!!*
         
         If package has deep mutual consecration with other you should add it to ignore list with path:
@@ -138,6 +138,7 @@ async function exec() {
         ${devDependenciesDescription}
        `,
       },
+      ...(config.assignee ? [{key: 'assignee', value: {accountId: config.assignee}}] : []),
     ]
 
     const payload = providedFields.reduce((acc, field) => {
@@ -173,6 +174,7 @@ function parseArgs() {
     depcheck: core.getInput('depcheck'),
     ignores: core.getInput('ignores'),
     comment: core.getInput('comment'),
+    assignee: core.getInput('assignee'),
   }
 }
 
