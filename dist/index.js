@@ -1,14 +1,14 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 863:
+/***/ 639:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const { get } = __nccwpck_require__(826)
+const { get } = __nccwpck_require__(707)
 
 const serviceName = 'jira'
-const { format } = __nccwpck_require__(310)
-const client = __nccwpck_require__(79)(serviceName)
+const { format } = __nccwpck_require__(16)
+const client = __nccwpck_require__(136)(serviceName)
 
 class Jira {
   constructor ({ baseUrl, token, email }) {
@@ -138,10 +138,10 @@ module.exports = Jira
 
 /***/ }),
 
-/***/ 79:
+/***/ 136:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const fetch = __nccwpck_require__(669)
+const fetch = __nccwpck_require__(63)
 
 module.exports = serviceName => async (state, apiMethod = 'unknown') => {
   const response = await fetch(state.req.url, state.req)
@@ -168,7 +168,7 @@ module.exports = serviceName => async (state, apiMethod = 'unknown') => {
 
 /***/ }),
 
-/***/ 216:
+/***/ 401:
 /***/ ((module) => {
 
 module.exports = eval("require")("@actions/core");
@@ -176,7 +176,7 @@ module.exports = eval("require")("@actions/core");
 
 /***/ }),
 
-/***/ 833:
+/***/ 841:
 /***/ ((module) => {
 
 module.exports = eval("require")("@actions/github");
@@ -184,7 +184,7 @@ module.exports = eval("require")("@actions/github");
 
 /***/ }),
 
-/***/ 826:
+/***/ 707:
 /***/ ((module) => {
 
 module.exports = eval("require")("lodash");
@@ -192,7 +192,7 @@ module.exports = eval("require")("lodash");
 
 /***/ }),
 
-/***/ 669:
+/***/ 63:
 /***/ ((module) => {
 
 module.exports = eval("require")("node-fetch");
@@ -200,7 +200,7 @@ module.exports = eval("require")("node-fetch");
 
 /***/ }),
 
-/***/ 310:
+/***/ 16:
 /***/ ((module) => {
 
 "use strict";
@@ -247,11 +247,9 @@ module.exports = require("url");
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
-(() => {
-const core = __nccwpck_require__(216);
-const Jira = __nccwpck_require__(863);
-const github = __nccwpck_require__(833);
+const core = __nccwpck_require__(401);
+const Jira = __nccwpck_require__(639);
+const github = __nccwpck_require__(841);
 
 const SUMMARY = 'Delete unused packages from package.json';
 
@@ -430,8 +428,6 @@ function parseArgs() {
 }
 
 exec()
-
-})();
 
 module.exports = __webpack_exports__;
 /******/ })()
