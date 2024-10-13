@@ -53,11 +53,13 @@ class Jira {
   }
 
   async searchDepcheckIssues ({comment, summary}) {
+    const jql = `description ~ "${comment} depcheck.yml" AND summary ~ "${summary}" AND resolution=Unresolved ORDER BY created ASC`;
+    const encodedJql = encodeURIComponent(jql);
     try {
       return this.fetch('searchIssue', {
         pathname: `/rest/api/2/search/`,
         query: {
-          jql: `description ~ "${comment} depcheck.yml" AND summary ~ "${summary}" AND resolution=Unresolved ORDER BY created ASC`,
+          jql: `${encodedJql}`,
           maxResults: 5,
           fields: 'description'
         },
