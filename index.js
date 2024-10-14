@@ -119,10 +119,6 @@ async function exec() {
         value: {value: 'Frontend Platform'},
       },
       {
-        key: 'labels',
-        value: ['TechnicalDebt'],
-      },
-      {
         key: 'description',
         value: `*${config.comment}*
         *BE CAREFUL!*
