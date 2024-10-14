@@ -51978,7 +51978,7 @@ async function exec() {
       {
         key: 'issuetype',
         value: {
-          name: config.issuetype,
+          id: config.issuetype,
         },
       },
       {
@@ -52005,7 +52005,7 @@ async function exec() {
         ${devDependenciesDescription}
        `,
       },
-      ...(config.assignee ? [{key: 'assignee', value: {accountId: config.assignee}}] : []),
+      ...(config.assignee ? [{key: 'assignee', value: {id: config.assignee}}] : []),
     ]
 
     const payload = providedFields.reduce((acc, field) => {
