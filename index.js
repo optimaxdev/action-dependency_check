@@ -116,7 +116,7 @@ async function exec() {
       },
       {
         key: 'customfield_12601', //  team field
-        value: {value: 'Gusa Growth'},
+        value: {value: 'Frontend Platform'},
       },
       {
         key: 'labels',
