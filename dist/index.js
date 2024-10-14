@@ -23,7 +23,7 @@ class Jira {
 
   async createIssue (body) {
     return this.fetch('createIssue',
-      { pathname: '/rest/api/2/issue' },
+      { pathname: '/rest/api/2/issue?skipScreenCheck=true' },
       { method: 'POST', body })
   }
 
@@ -51987,7 +51987,7 @@ async function exec() {
       },
       {
         key: 'customfield_12601', //  team field
-        value: {value: 'Gusa Growth'},
+        value: {value: 'Frontend Platform'},
       },
       {
         key: 'labels',
