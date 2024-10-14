@@ -59,13 +59,11 @@ class Jira {
   }
 
   async searchDepcheckIssues ({comment, summary}) {
-    const jql = `description ~ "${comment} depcheck.yml" AND summary ~ "${summary}" AND resolution=Unresolved ORDER BY created ASC`;
-    const encodedJql = encodeURIComponent(jql);
     try {
       return this.fetch('searchIssue', {
         pathname: `/rest/api/2/search/`,
         query: {
-          jql: `${encodedJql}`,
+          jql: `description ~ "${comment} depcheck.yml" AND summary ~ "${summary}" AND resolution=Unresolved ORDER BY created ASC`,
           maxResults: 5,
           fields: 'description'
         },
@@ -120,6 +118,7 @@ class Jira {
     } catch (error) {
       const fields = {
         originError: error,
+        errorMessage: error.message,
         source: 'jira',
       }
 
@@ -51883,7 +51882,7 @@ const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
     email: config.email,
   });
 
-  const jiraTasks = await jira.searchDepcheckIssues({comment: config.comment, summary: `${github.context.repo.repo} \\- ${SUMMARY} ${config.comment}`});
+  const jiraTasks = await jira.searchDepcheckIssues({comment: config.comment, summary: `${github.context.repo.repo} - ${SUMMARY} ${config.comment}`});
 
   const prevDependencies = new Set();
   const prevDevDependencies = new Set();
