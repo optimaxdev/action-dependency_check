@@ -51978,7 +51978,7 @@ async function exec() {
       {
         key: 'issuetype',
         value: {
-          id: '3',
+          id: config.issuetype,
         },
       },
       {
