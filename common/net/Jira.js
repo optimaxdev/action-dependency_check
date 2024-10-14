@@ -17,7 +17,7 @@ class Jira {
 
   async createIssue (body) {
     return this.fetch('createIssue',
-      { pathname: '/rest/api/2/issue', query: {skipScreenCheck: true} },
+      { pathname: '/rest/api/2/issue' },
       { method: 'POST', body })
   }
 
