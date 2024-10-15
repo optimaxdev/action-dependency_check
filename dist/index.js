@@ -61,7 +61,7 @@ class Jira {
   async searchDepcheckIssues ({comment, summary}) {
     try {
       return this.fetch('searchIssue', {
-        pathname: `/rest/api/2/search/`,
+        pathname: `/rest/api/2/search`,
         query: {
           jql: `description ~ "${comment} depcheck.yml" AND summary ~ "${summary}" AND resolution=Unresolved ORDER BY created ASC`,
           maxResults: 5,
