@@ -25,7 +25,6 @@ const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
     issue.fields.description.match(/\*dependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDependencies.add(a));
     issue.fields.description.match(/\*devDependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDevDependencies.add(a));
   });
-  jiraTasks.message
   console.log(jiraTasks, 'jiraTasks'); //TODO remove
 
   console.log('dependencies before filters:', dependencies);
