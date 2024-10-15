@@ -65,7 +65,7 @@ class Jira {
         query: {
           jql: `description ~ "${comment} depcheck.yml" AND summary ~ "${summary}" AND resolution=Unresolved ORDER BY created ASC`,
           maxResults: 5,
-          fields: ['description', 'summary']
+          fields: 'description'
         },
       })
     } catch (error) {
@@ -51882,7 +51882,7 @@ const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
     email: config.email,
   });
 
-  const jiraTasks = await jira.searchDepcheckIssues({comment: config.comment, summary: `${github.context.repo.repo} - ${SUMMARY} ${config.comment}`});
+  const jiraTasks = await jira.searchDepcheckIssues({comment: config.comment, summary: `${github.context.repo.repo} \\- ${SUMMARY} ${config.comment}`});
 
   const prevDependencies = new Set();
   const prevDevDependencies = new Set();
