@@ -25,6 +25,9 @@ inputs:
   comment:
     description: "Extend jira task description"
     required: false
+  assignee:
+    description: "Maria Chekalova's accountId in Jira"
+    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'

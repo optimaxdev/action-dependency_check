@@ -59,7 +59,7 @@ class Jira {
         query: {
           jql: `description ~ "${comment} depcheck.yml" AND summary ~ "${summary}" AND resolution=Unresolved ORDER BY created ASC`,
           maxResults: 5,
-          fields: 'description'
+          fields: ['description', 'summary']
         },
       })
     } catch (error) {
