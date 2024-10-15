@@ -65,7 +65,7 @@ class Jira {
         query: {
           jql: `description ~ "${comment} depcheck.yml" AND summary ~ "${summary}" AND resolution=Unresolved ORDER BY created ASC`,
           maxResults: 5,
-          fields: 'description'
+          fields: ['description', 'summary']
         },
       })
     } catch (error) {
@@ -51896,7 +51896,6 @@ const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
     issue.fields.description.match(/\*dependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDependencies.add(a));
     issue.fields.description.match(/\*devDependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDevDependencies.add(a));
   });
-
   console.log(jiraTasks, 'jiraTasks'); //TODO remove
 
   console.log('dependencies before filters:', dependencies);
@@ -51954,6 +51953,7 @@ async function exec() {
       email: config.email,
     });
 
+    console.log(jira.email, jira.token, 'email'); //TODO remove
     let {dependencies, devDependencies} = await prepareData(config);
 
     console.log('dependencies after filters', dependencies);
@@ -52028,9 +52028,9 @@ async function exec() {
     console.log('createIssue temporarily commented') //TODO remove
     // const jiraTask = await jira.createIssue(payload)
     // console.log({jiraTask, payload})
-    if (!jiraTask.key) {
-      throw new Error('Task is not created')
-    }
+    // if (!jiraTask.key) {
+    //   throw new Error('Task is not created')
+    // }
     process.exit(0)
   } catch (error) {
     console.error(error)
