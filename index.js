@@ -17,15 +17,10 @@ const filterUnresolvedDeps = async (config, dependencies, devDependencies) => {
   const prevDevDependencies = new Set();
 
   jiraTasks?.issues?.forEach((issue) => {
-    console.log(issue, 'issue'); //TODO remove
-    console.log(issue.fields, 'issue.fields'); //TODO remove
-    console.log(issue.fields.description, 'issue.fields.description'); //TODO remove
-
     /* Parse dependencies from description */
     issue.fields.description.match(/\*dependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDependencies.add(a));
     issue.fields.description.match(/\*devDependency:\*\n.*{{([^}}]+)}}/)?.[1]?.split(', ')?.forEach((a) => prevDevDependencies.add(a));
   });
-  console.log(jiraTasks, 'jiraTasks'); //TODO remove
 
   console.log('dependencies before filters:', dependencies);
   console.log('devDependencies before filters:', devDependencies);
@@ -82,7 +77,6 @@ async function exec() {
       email: config.email,
     });
 
-    console.log(jira.email, jira.token, 'email'); //TODO remove
     let {dependencies, devDependencies} = await prepareData(config);
 
     console.log('dependencies after filters', dependencies);
@@ -154,12 +148,11 @@ async function exec() {
       },
     })
 
-    console.log('createIssue temporarily commented') //TODO remove
-    // const jiraTask = await jira.createIssue(payload)
-    // console.log({jiraTask, payload})
-    // if (!jiraTask.key) {
-    //   throw new Error('Task is not created')
-    // }
+    const jiraTask = await jira.createIssue(payload)
+    console.log({jiraTask, payload})
+    if (!jiraTask.key) {
+      throw new Error('Task is not created')
+    }
     process.exit(0)
   } catch (error) {
     console.error(error)
